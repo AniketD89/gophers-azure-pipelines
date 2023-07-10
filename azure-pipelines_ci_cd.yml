@@ -1,0 +1,71 @@
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest"
+
+
+stages:
+- stage: 'Build'
+  displayName: 'Build'
+  jobs:
+    - job: Build
+      displayName: Build
+      steps:
+      - task: GoTool@0
+        displayName: "Go Install"
+        inputs:
+          version: '1.20.5'
+
+      - task: Go@0
+        inputs:
+          command: 'get'
+          arguments: '-d'
+      
+      - task: Go@0
+        displayName: "Build"
+        inputs:
+          command: 'build'
+          arguments: '-o $(Build.ArtifactStagingDirectory)/mydemoapp.exe'
+      
+      - task: ArchiveFiles@2
+        displayName: "File Archival"
+        inputs:
+          rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/mydemoapp.exe'
+          includeRootFolder: true
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/mydemoapp.zip'
+          replaceExistingArchive: true
+      
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish Artifacts"
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'drop'
+          publishLocation: 'Container'
+
+
+- stage: 'Deploy'
+  displayName: 'Deploy App'
+  jobs:
+    - job: Deploy
+      displayName: Deployment
+      steps:
+
+      - task: DownloadBuildArtifacts@1
+        displayName: "Download Artifacts"
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: 'drop'
+          downloadPath: '$(System.DefaultWorkingDirectory)'
+
+
+      - task: AzureRmWebAppDeployment@4
+        displayName: "Deploymeny to Azure WebApp"
+        inputs:
+          ConnectionType: 'AzureRM'
+          azureSubscription: 'Pay-As-You-Go (36e5119a-ef0e-4643-a46a-4a137216c264)'
+          appType: 'webAppLinux'
+          WebAppName: 'mygowebapp'
+          packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
