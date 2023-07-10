@@ -26,12 +26,12 @@ stages:
         displayName: "Build"
         inputs:
           command: 'build'
-          arguments: '-o $(Build.ArtifactStagingDirectory)/mydemoapp.exe'
+          arguments: '-o mydemoapp.exe'
       
       - task: ArchiveFiles@2
         displayName: "File Archival"
         inputs:
-          rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/mydemoapp.exe'
+          rootFolderOrFile: '$(Build.SourcesDirectory)'
           includeRootFolder: true
           archiveType: 'zip'
           archiveFile: '$(Build.ArtifactStagingDirectory)/mydemoapp.zip'
