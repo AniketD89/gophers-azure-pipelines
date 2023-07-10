@@ -51,6 +51,7 @@ stages:
     - job: Deploy
       displayName: Deployment
       steps:
+      - checkout: none
 
       - task: DownloadBuildArtifacts@1
         displayName: "Download Artifacts"
@@ -67,5 +68,5 @@ stages:
           ConnectionType: 'AzureRM'
           azureSubscription: 'Pay-As-You-Go (36e5119a-ef0e-4643-a46a-4a137216c264)'
           appType: 'webAppLinux'
-          WebAppName: 'mygoappsample'
+          WebAppName: 'appgoweb'
           packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
