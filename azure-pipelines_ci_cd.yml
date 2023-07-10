@@ -32,7 +32,7 @@ stages:
         displayName: "File Archival"
         inputs:
           rootFolderOrFile: '$(Build.SourcesDirectory)'
-          includeRootFolder: true
+          includeRootFolder: false
           archiveType: 'zip'
           archiveFile: '$(Build.ArtifactStagingDirectory)/mydemoapp.zip'
           replaceExistingArchive: true
